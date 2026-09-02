@@ -28,12 +28,13 @@ A storage and distribution system for Docker images. Docker Hub is the default p
 # DOCKER COMMANDS
 
 ```bash
-docker run <image>    # creates and starts a new container from an image every time
+docker run  [flags]  <image>  <command>    # creates and starts a new container from an image every time
+-> -it # interactive + allocate a terminal (combo of -i and -t); without this, you can't type into the container 
+-> -d # detached mode, runs the container in the background and gives you your terminal back immediately
+-> --rm # automatically delete the container when it stops
+-> --name <name> # give the container a memorable name instead of a random one, so you can reference it easily
 ```
 
-```bash
-docker run -it <image> bash    # same, but interactive with a shell attached
-```
 
 ```bash
 docker ps   # lists all running containers, and -a to list all containers (including stopped ones)
@@ -57,6 +58,7 @@ docker rmi <image>    # removes a Docker image
 
 ```bash
 docker stop <container_id>    # stop a running container gracefully (vs exiting out of it)
+```
 
 ```bash
 docker logs <container_id>    # shows the logs of a container
