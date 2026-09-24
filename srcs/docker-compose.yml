@@ -1,0 +1,14 @@
+services:
+  mariadb:
+    build:
+      context: ./requirements/mariadb
+
+  wordpress:
+    build:
+      context: ./requirements/wordpress
+
+  nginx:
+    build:
+      context: ./requirements/nginx
+    ports:
+      - "433:433"
