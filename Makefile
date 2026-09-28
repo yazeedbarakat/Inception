@@ -1,13 +1,13 @@
 up:
 	mkdir -p /home/ybarakat/data/mariadb
 	mkdir -p /home/ybarakat/data/wordpress
-	docker compose up -d --build
+	docker compose -f ./srcs/docker-compose.yml up -d --build
 
 down:
-	docker compose down
+	docker compose -f ./srcs/docker-compose.yml down
 
 clean: down
-	docker compose down --rmi up -v
+	docker compose -f ./srcs/docker-compose.yml down --rmi all -v
 
 fclean: clean
 	sudo rm -rf /home/ybarakat/data/mariadb/*

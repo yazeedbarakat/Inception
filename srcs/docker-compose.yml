@@ -2,10 +2,10 @@ services:
   mariadb:
     build:
       context: ./requirements/mariadb
-    image: mariadb
+    image: mariadb:inception
     container_name: mariadb
     volumes:
-      - /home/ybarakat/data/mariadb:/var/lib/mysql
+      - mariadb_vol:/var/lib/mysql
     restart: always
     env_file:
       - ./.env
@@ -15,10 +15,10 @@ services:
   wordpress:
     build:
       context: ./requirements/wordpress
-    image: wordpress
+    image: wordpress:inception
     container_name: wordpress
     volumes:
-      - /home/ybarakat/data/wordpress:/var/www/html
+      - wordpress_vol:/var/www/html
     restart: always
     depends_on:
       - mariadb
@@ -30,12 +30,12 @@ services:
   nginx:
     build:
       context: ./requirements/nginx
-    image: nginx
+    image: nginx:inception
     container_name: nginx
     ports:
       - "443:443"
     volumes:
-      - /home/ybarakat/data/wordpress:/var/www/html
+      - wordpress_vol:/var/www/html
     restart: always
     depends_on:
       - wordpress
@@ -44,3 +44,17 @@ services:
 networks:
   inception:
     driver: bridge
+
+volumes:
+  mariadb_vol:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/ybarakat/data/mariadb
+  wordpress_vol:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/ybarakat/data/wordpress
