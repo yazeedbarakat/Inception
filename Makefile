@@ -1,4 +1,6 @@
-up:
+   .PHONY: all up down clean fclean re
+
+all:
 	mkdir -p /home/ybarakat/data/mariadb
 	mkdir -p /home/ybarakat/data/wordpress
 	docker compose -f ./srcs/docker-compose.yml up -d --build
@@ -6,12 +8,11 @@ up:
 down:
 	docker compose -f ./srcs/docker-compose.yml down
 
-clean: down
+clean:
 	docker compose -f ./srcs/docker-compose.yml down --rmi all -v
 
 fclean: clean
 	sudo rm -rf /home/ybarakat/data/mariadb/*
 	sudo rm -rf /home/ybarakat/data/wordpress/*
-	docker system prune -af --volumes
 
-re: fclean up
+re: fclean all
