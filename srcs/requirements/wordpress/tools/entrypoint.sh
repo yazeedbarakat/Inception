@@ -11,6 +11,7 @@ if [ ! -f /var/www/html/wp-config.php ]; then
     wp core download --allow-root
     wp config create --dbname="$DB_NAME" --dbuser="$DB_USER" --dbpass="$DB_USER_PASS" --dbhost="$DB_HOST" --allow-root
     wp core install --url="https://$DOMAIN_NAME" --title="$WP_TITLE" --admin_user="$WP_ADMIN_USER" --admin_password="$WP_ADMIN_PASS" --admin_email="$WP_ADMIN_EMAIL" --allow-root
+    wp user create "$WP_USER" "$WP_USER_EMAIL" --user_pass="$WP_USER_PASS" --role="author" --allow-root
 fi
 chown -R www-data:www-data /var/www/html
 exec php-fpm8.2 -F
