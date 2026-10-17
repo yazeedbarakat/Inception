@@ -26,12 +26,11 @@ Two named volumes persist the data (the database and the WordPress files), and a
 ├── README.md
 ├── USER_DOC.md
 ├── DEV_DOC.md
-├── secrets/                    # local only, ignored by git
 └── srcs/
     ├── docker-compose.yml
-    ├── .env                    # local only, ignored by git
+    ├── .env                    # configuration and passwords, local only
     └── requirements/
-        ├── mariadb/   (Dockerfile, conf/, tools/entrypoint.sh)
+        ├── mariadb/   (Dockerfile, tools/entrypoint.sh)
         ├── nginx/     (Dockerfile, conf/nginx.conf)
         └── wordpress/ (Dockerfile, tools/entrypoint.sh)
 ```
@@ -55,13 +54,13 @@ Two named volumes persist the data (the database and the WordPress files), and a
 A virtual machine emulates hardware and runs a full guest operating system with its own kernel, so it is heavy to start and uses a lot of RAM and disk. A Docker container is just an isolated process (or group of processes) that shares the host's kernel and only ships the userland files it needs. Containers start in seconds and are much lighter, but they are less isolated than a VM since the kernel is shared. In this project the VM is the host that gives a safe, disposable environment, and Docker splits the application into small services inside it.
 
 **Secrets vs Environment Variables**
-Environment variables are simple and good for non-sensitive configuration (domain name, database name, site title). The downside is that they are visible in `docker inspect`, in `/proc` inside the container, and are easily leaked by logs or child processes. Docker secrets are mounted as files in `/run/secrets/` inside only the containers that need them, are not stored in the image, and are not shown by `docker inspect`. This project uses a `.env` file for general configuration and secrets for passwords. Both are kept out of git.
+Environment variables are simple and good for non-sensitive configuration (domain name, database name, site title). The downside is that they are visible in `docker inspect`, in `/proc` inside the container, and are easily leaked by logs or child processes. Docker secrets are mounted as files in `/run/secrets/` inside only the containers that need them, are not stored in the image, and are not shown by `docker inspect`. This project keeps all its configuration, passwords included, in a local `srcs/.env` file that Compose passes to the containers through `env_file`. Moving the passwords to Docker secrets would be the more secure option.
 
 **Docker Network vs Host Network**
 With a dedicated Docker (bridge) network, containers get their own private network, can reach each other by service name through Docker's built-in DNS, and only the ports that are explicitly published are reachable from outside. With host networking the container shares the host's network stack directly: there is no isolation and no port mapping, and port conflicts with the host become possible. This project uses a custom bridge network, and only nginx publishes a port (443). `network: host` and `links` are forbidden by the subject.
 
 **Docker Volumes vs Bind Mounts**
-A bind mount maps an exact host path into the container and depends on that host directory's layout and permissions. A named volume is created and managed by Docker, referenced by name, and is independent of the container lifecycle. This project uses named volumes (`mariadb_vol`, `wordpress_vol`) as required by the subject. Their `driver_opts` place the data under `/home/ybarakat/data` on the host, so the files are easy to find while Docker still manages them as volumes.
+A bind mount maps an exact host path into the container and depends on that host directory's layout and permissions. A named volume is created and managed by Docker, referenced by name, and is independent of the container lifecycle. This project uses named volumes (`mariadb_vol`, `wordpress_vol`) as required by the subject. Their `driver_opts` place the data under `/home/<login>/data` on the host (the `DATA_PATH` variable in `srcs/.env`), so the files are easy to find while Docker still manages them as volumes.
 
 ## Instructions
 
@@ -78,7 +77,7 @@ A bind mount maps an exact host path into the container and depends on that host
 ### Setup
 
 1. Clone the repository.
-2. Create `srcs/.env` and the files in `secrets/` (see `DEV_DOC.md` for the full list of variables).
+2. Create `srcs/.env` (see `DEV_DOC.md` for the full list of variables).
 3. Build and start everything:
 
 ```

@@ -12,7 +12,7 @@ The stack runs a WordPress website made of three services, each in its own conta
 | `wordpress` | Runs the WordPress site (PHP). It is only reachable through nginx.   |
 | `mariadb`   | The database where WordPress stores posts, pages, users and settings. |
 
-Your website data survives restarts: the database and the WordPress files are kept in two persistent volumes stored under `/home/ybarakat/data/` on the host machine.
+Your website data survives restarts: the database and the WordPress files are kept in two persistent volumes stored under `/home/<login>/data/` on the host machine (the `DATA_PATH` value in `srcs/.env`).
 
 ## 2. Start and stop the project
 
@@ -59,24 +59,18 @@ Log in with the WordPress administrator account (see the next section for where 
 
 ## 4. Locate and manage credentials
 
-Credentials are never stored in the images or in git. They are kept in local files that exist only on your machine:
+Credentials are never written in the Dockerfiles or baked into the images. All of them are kept in one local file, `srcs/.env`, which must never be committed to git.
 
-| Where                 | What it contains                                              |
-|-----------------------|---------------------------------------------------------------|
-| `srcs/.env`           | Non-sensitive settings: domain name, database name, usernames, site title, admin email |
-| `secrets/*.txt`       | Passwords (database user, database root, WordPress admin)    |
-
-The WordPress administrator account is defined by:
-
-- `WP_ADMIN_USER` (the login name)
-- the matching admin password
-- `WP_ADMIN_EMAIL`
-
-The MariaDB users used by the stack are defined by `DB_ADMIN` / `DB_ADMIN_PASS` and `DB_USER` / `DB_USER_PASS`, and the root password by `DB_ROOT_PASS`.
+| Account                     | Variables in `srcs/.env`                                   |
+|-----------------------------|------------------------------------------------------------|
+| WordPress administrator     | `WP_ADMIN_USER`, `WP_ADMIN_PASS`, `WP_ADMIN_EMAIL`         |
+| WordPress regular user      | `WP_USER`, `WP_USER_PASS`, `WP_USER_EMAIL` (role: author)  |
+| MariaDB user used by WordPress | `DB_USER`, `DB_USER_PASS`                               |
+| MariaDB root                | `DB_ROOT_PASS`                                             |
 
 ### Changing a password
 
-Database and WordPress accounts are created **only the first time** the containers start with empty data. Editing a password in the files afterwards does not change an existing account. To apply new values, either:
+Database and WordPress accounts are created **only the first time** the containers start with empty data. Editing a password in `srcs/.env` afterwards does not change an existing account. To apply new values, either:
 
 - change the password from inside WordPress (Users -> Profile) for the WordPress admin, or
 - run `make re` to wipe everything and recreate it with the new values (**this deletes all site content**).
