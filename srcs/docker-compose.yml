@@ -1,3 +1,13 @@
+secrets:
+  db_root_password:
+    file: ../secrets/db_root_password.txt
+  db_password:
+    file: ../secrets/db_password.txt
+  wp_admin_password:
+    file: ../secrets/wp_admin_password.txt
+  wp_user_password:
+    file: ../secrets/wp_user_password.txt
+
 services:
   mariadb:
     build:
@@ -11,6 +21,9 @@ services:
       - ./.env
     networks:
       - inception
+    secrets:
+      - db_root_password
+      - db_password
 
   wordpress:
     build:
@@ -26,6 +39,10 @@ services:
       - ./.env
     networks:
       - inception
+    secrets:
+      - db_password
+      - wp_admin_password
+      - wp_user_password
 
   nginx:
     build:

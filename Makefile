@@ -1,4 +1,4 @@
-    .PHONY: all up down clean fclean re
+    .PHONY: all down clean fclean re
 
 all:
 	mkdir -p /home/ybarakat/data/mariadb

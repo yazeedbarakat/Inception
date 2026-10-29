@@ -3,9 +3,10 @@
 sed -i "s|listen = /run/php/php8.2-fpm.sock|listen = 0.0.0.0:9000|g" /etc/php/8.2/fpm/pool.d/www.conf
 
 mkdir -p /run/php
-
 cd /var/www/html
-
+DB_USER_PASS=$(cat /run/secrets/db_password)
+WP_ADMIN_PASS=$(cat /run/secrets/wp_admin_password)
+WP_USER_PASS=$(cat /run/secrets/wp_user_password)
 if [ ! -f /var/www/html/wp-config.php ]; then
     mysqladmin ping -h $DB_HOST --wait=30 --silent 2>/dev/null
     wp core download --allow-root

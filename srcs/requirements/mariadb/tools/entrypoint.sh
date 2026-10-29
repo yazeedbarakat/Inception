@@ -1,9 +1,9 @@
 #!/bin/bash
-
 mkdir -p /run/mysqld
 chown -R mysql:mysql /run/mysqld
 sed -i "s/bind-address\s*=.*/bind-address = 0.0.0.0/" /etc/mysql/mariadb.conf.d/50-server.cnf
-
+DB_ROOT_PASS=$(cat /run/secrets/db_root_password)
+DB_USER_PASS=$(cat /run/secrets/db_password)
 if [ ! -d "/var/lib/mysql/mysql" ]; then
     mariadb-install-db --user=mysql --datadir=/var/lib/mysql
     mysqld --user=mysql --bootstrap <<EOF
